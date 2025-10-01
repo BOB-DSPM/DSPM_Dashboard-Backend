@@ -19,7 +19,7 @@ FastAPI 기반의 DSPM(Data Security Posture Management) 대시보드 백엔드 
 ## 🛠 로컬 개발
 
 ### Python 직접 실행
-
+s
 ```bash
 # 의존성 설치
 pip install -r requirements.txt
