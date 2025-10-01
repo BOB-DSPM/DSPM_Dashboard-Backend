@@ -17,7 +17,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-ANALYZER_BASE_URL = os.getenv("ANALYZER_BASE_URL", "http://analyzer:8080")
+# 환경변수에서 analyzer URL 가져오기 (기본값: http://analyzer:8080)
+ANALYZER_BASE_URL = os.getenv("ANALYZER_URL", "http://analyzer:8080")
 
 
 @app.get("/")
