@@ -16,12 +16,16 @@ public class MainController {
     @Value("${analyzer.base-url}")
     private String analyzerBaseUrl;
 
+    @Value("${auth.base-url}")
+    private String authBaseUrl;
+
     @GetMapping("/")
     public ResponseEntity<Map<String, Object>> root() {
         Map<String, Object> response = new HashMap<>();
         response.put("message", "DSPM Dashboard Backend");
         response.put("version", "1.0.0");
         response.put("analyzer_url", analyzerBaseUrl);
+        response.put("auth_url", authBaseUrl);
         return ResponseEntity.ok(response);
     }
 

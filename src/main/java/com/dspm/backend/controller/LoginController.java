@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 public class LoginController {
 
     @Value("${auth.base-url}")
-    private String authBaseUrl; // application.properties에 http://auth:3001/api
+    private String authBaseUrl;
 
     private final WebClient webClient;
 
@@ -36,10 +36,10 @@ public class LoginController {
                 .bodyToMono(Object.class)
                 .timeout(Duration.ofSeconds(10))
                 .map(ResponseEntity::ok)
-                .onErrorResume(ex -> Mono.just(
-                        ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                                .body(Map.of("error", "Auth service error: " + ex.getMessage()))
-                ));
+                .onErrorResume(ex ->
+                        Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                                .body(Map.of("error", "Auth service error: " + ex.getMessage())))
+                );
     }
 
     // 토큰 검증
@@ -52,10 +52,10 @@ public class LoginController {
                 .bodyToMono(Object.class)
                 .timeout(Duration.ofSeconds(10))
                 .map(ResponseEntity::ok)
-                .onErrorResume(ex -> Mono.just(
-                        ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                                .body(Map.of("error", "Auth service error: " + ex.getMessage()))
-                ));
+                .onErrorResume(ex ->
+                        Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                                .body(Map.of("error", "Auth service error: " + ex.getMessage())))
+                );
     }
 
     // 로그아웃
@@ -68,9 +68,9 @@ public class LoginController {
                 .bodyToMono(Object.class)
                 .timeout(Duration.ofSeconds(10))
                 .map(ResponseEntity::ok)
-                .onErrorResume(ex -> Mono.just(
-                        ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                                .body(Map.of("error", "Auth service error: " + ex.getMessage()))
-                ));
+                .onErrorResume(ex ->
+                        Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                                .body(Map.of("error", "Auth service error: " + ex.getMessage())))
+                );
     }
 }
