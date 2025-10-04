@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 public class LoginController {
 
     @Value("${auth.base-url}")
-    private String authBaseUrl;
+    private String authBaseUrl; // 반드시 http://auth:3005/api 로 설정해야 함
 
     private final WebClient webClient;
 
@@ -35,64 +35,26 @@ public class LoginController {
 
     @PostMapping("/login")
     public Mono<ResponseEntity<Object>> login(@RequestBody Map<String, Object> body) {
-        return webClient.post()
-                .uri(authBaseUrl + "/auth/login")
-                .bodyValue(body)
-                .retrieve()
-                .bodyToMono(Object.class)
-                .timeout(Duration.ofSeconds(10))
-                .map(ResponseEntity::ok)
-                .onErrorResume(WebClientException.class, ex -> {
-                    Map<String, String> errorResponse = new HashMap<>();
-                    if (ex.getMessage().contains("Connection refused")) {
-                        errorResponse.put("error", "Auth service unreachable");
-                        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponse));
-                    } else {
-                        errorResponse.put("error", "Auth service timeout");
-                        return Mono.just(ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).body(errorResponse));
-                    }
-                })
-                .onErrorResume(Exception.class, ex -> {
-                    Map<String, String> errorResponse = new HashMap<>();
-                    errorResponse.put("error", "Error: " + ex.getMessage());
-                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
-                });
+        return callAuthService("/auth/login", body);
     }
 
     @PostMapping("/verify-token")
     public Mono<ResponseEntity<Object>> verifyToken(@RequestBody Map<String, Object> body) {
-        return webClient.post()
-                .uri(authBaseUrl + "/auth/verify-token")
-                .bodyValue(body)
-                .retrieve()
-                .bodyToMono(Object.class)
-                .timeout(Duration.ofSeconds(10))
-                .map(ResponseEntity::ok)
-                .onErrorResume(WebClientException.class, ex -> {
-                    Map<String, String> errorResponse = new HashMap<>();
-                    if (ex.getMessage().contains("Connection refused")) {
-                        errorResponse.put("error", "Auth service unreachable");
-                        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponse));
-                    } else {
-                        errorResponse.put("error", "Auth service timeout");
-                        return Mono.just(ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).body(errorResponse));
-                    }
-                })
-                .onErrorResume(Exception.class, ex -> {
-                    Map<String, String> errorResponse = new HashMap<>();
-                    errorResponse.put("error", "Error: " + ex.getMessage());
-                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
-                });
+        return callAuthService("/auth/verify-token", body);
     }
 
     @PostMapping("/logout")
     public Mono<ResponseEntity<Object>> logout(@RequestBody Map<String, Object> body) {
+        return callAuthService("/auth/logout", body);
+    }
+
+    private Mono<ResponseEntity<Object>> callAuthService(String path, Map<String, Object> body) {
         return webClient.post()
-                .uri(authBaseUrl + "/auth/logout")
+                .uri(authBaseUrl + path)
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(Object.class)
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(15))
                 .map(ResponseEntity::ok)
                 .onErrorResume(WebClientException.class, ex -> {
                     Map<String, String> errorResponse = new HashMap<>();
